@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Um Pedido Especial para a Bea</title>
+
+<link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+<link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+<link href="[https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&family=Quicksand:wght@400;500;700&display=swap](https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&family=Quicksand:wght@400;500;700&display=swap)" rel="stylesheet">
+
+<style>
+    /* CSS Reset and Base Styles */
+    :root {
+        --color-primary: #F9DDE7; /* Rosa */
+        --color-secondary: #E6E1FF; /* Lilás */
+        --color-background: #FFF6E5; /* Creme */
+        --color-accent: #E3F7EF; /* Menta */
+        --color-text: #333;
+        --color-text-soft: #555;
+        --color-shadow: rgba(0, 0, 0, 0.08);
+        --font-heading: 'Nunito', sans-serif;
+        --font-body: 'Quicksand', sans-serif;
+        --border-radius: 20px;
+        --transition-speed: 300ms;
+    }
+
+    html[data-theme="dark"] {
+        --color-primary: #5e3d4a;
+        --color-secondary: #4a446b;
+        --color-background: #1a1815;
+        --color-accent: #3c6358;
+        --color-text: #f0f0f0;
+        --color-text-soft: #ccc;
+        --color-shadow: rgba(255, 255, 255, 0.08);
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: var(--font-body);
+        background-color: var(--color-background);
+        color: var(--color-text);
+        line-height: 1.7;
+        transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+        overflow-x: hidden;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+    
+    :focus-visible {
+        outline: 3px solid var(--color-secondary);
+        outline-offset: 3px;
+        border-radius: 4px;
+    }
+
+    /* Layout and General Styles */
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    h1, h2, h3 {
+        font-family: var(--font-heading);
+        font-weight: 900;
+        color: var(--color-text);
+        margin-bottom: 1rem;
+    }
+    
+    h2 { text-align: center; font-size: 2.2rem; }
+
+    .section {
+        padding: 4rem 0;
+        position: relative;
+    }
+    
+    .card {
+        background-color: rgba(255, 255, 255, 0.6);
+        padding: 2rem;
+        border-radius: var(--border-radius);
+        box-shadow: 0 8px 32px var(--color-shadow);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    }
+
+    html[data-theme="dark"] .card {
+        background-color: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px var(--color-shadow);
+    }
+
+    p {
+        margin-bottom: 1rem;
+        color: var(--color-text-soft);
+    }
+
+    /* Hero Section */
+    #hero {
+        text-align: center;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+        position: relative;
+        overflow: hidden;
+        padding-bottom: 100px; /* Space for waves */
+    }
+    
+    .waves {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 150px;
+    }
+
+    .wave {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 200%;
+        height: 100%;
+        background-size: 50% 100%;
+        background-repeat: repeat-x;
+        animation: wave-animation 15s linear infinite;
+    }
+
+    #wave1 {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)' viewBox='0 0 1440 320'%3e%3cpath fill='%23fff6e5' fill-opacity='0.7' d='M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,133.3C672,117,768,139,864,165.3C960,192,1056,224,1152,218.7C1248,213,1344,171,1392,149.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3e%3c/path%3e%3c/svg%3e");
+        animation-duration: 20s;
+    }
+
+    #wave2 {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)' viewBox='0 0 1440 320'%3e%3cpath fill='%23fff6e5' fill-opacity='0.5' d='M0,224L48,208C96,192,192,160,288,165.3C384,171,480,213,576,240C672,267,768,277,864,256C960,235,1056,181,1152,160C1248,139,1344,149,1392,154.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3e%3c/path%3e%3c/svg%3e");
+        animation-direction: reverse;
+    }
+
+    @keyframes wave-animation {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+
+    html[data-theme="dark"] .wave { filter: brightness(0.2); }
+    
+    #hero-greeting {
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    #hero-subtext {
+        font-size: clamp(1.2rem, 3vw, 1.6rem);
+        color: var(--color-text);
+        min-height: 2.5em;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
+        max-width: 600px;
+        font-weight: 500;
+    }
+    #hero-subtext::after {
+        content: '|';
+        animation: blink 700ms infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* Countdown Section */
+    .countdown-container {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 1;
+    }
+
+    .countdown-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 100px;
+    }
+
+    .countdown-value {
+        font-size: 2.5rem;
+        font-weight: 900;
+        font-family: var(--font-heading);
+        background: rgba(255, 255, 255, 0.5);
+        color: var(--color-text);
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+        box-shadow: 0 4px 15px var(--color-shadow);
+        transition: transform 0.3s ease;
+    }
+    .countdown-value:hover {
+        transform: scale(1.1);
+    }
+
+    .countdown-label {
+        font-size: 0.9rem;
+        color: var(--color-text-soft);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Journey Section */
+    #journey .journey-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .journey-item {
+        text-align: center;
+        padding: 1.5rem;
+    }
+    
+    .journey-item .icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: inline-block;
+        color: var(--color-primary);
+    }
+    
+    .journey-item h3 {
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    html[data-theme="dark"] .journey-item .icon { color: var(--color-secondary); }
+
+    /* Proposal Section */
+    #proposal { background-color: var(--color-accent); }
+    html[data-theme="dark"] #proposal { background-color: var(--color-accent); filter: brightness(0.4); }
+
+    #proposal-text {
+        font-size: 1.25rem;
+        line-height: 1.8;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+    }
+
+    #final-question {
+        font-family: var(--font-heading);
+        font-weight: 900;
+        font-size: 1.8rem;
+        margin-top: 2.5rem;
+        color: var(--color-text);
+        text-align: center;
+    }
+
+    /* Footer */
+    footer {
+        text-align: center;
+        padding: 2rem 1.5rem;
+        font-size: 0.9rem;
+        margin-top: auto;
+    }
+    .theme-switcher {
+        margin-top: 1rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 99px;
+        transition: background-color var(--transition-speed);
+    }
+    .theme-switcher:hover { background-color: var(--color-shadow); }
+    
+    /* Hearts Animation */
+    .hearts {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+    }
+    .heart {
+        position: absolute;
+        opacity: 0;
+        font-size: 1.5rem;
+        animation: float 8s ease-in-out infinite;
+    }
+    @keyframes float {
+        0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+
+    /* Reveal on Scroll Animation */
+    .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+        h2 { font-size: 1.8rem; }
+        .countdown-container { gap: 1rem; }
+        .countdown-item { min-width: 70px; }
+        .countdown-value { width: 65px; height: 65px; font-size: 2rem; }
+    }
+
+    /* Confetti Canvas */
+    #confetti-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 9999;
+    }
+
+</style>
+</head>
+<body>
+<canvas id="confetti-canvas"></canvas>
+
+<header id="hero" class="section">
+    <div class="hearts" id="hearts-container"></div>
+    <div class="waves">
+        <div class="wave" id="wave1"></div>
+        <div class="wave" id="wave2"></div>
+    </div>
+    <div class="container">
+        <h1 id="hero-greeting" class="reveal">Para a minha Beatriz,</h1>
+        <p id="hero-subtext"></p>
+        <div class="countdown-container reveal">
+            <div class="countdown-item">
+                <div class="countdown-value" id="days">00</div>
+                <div class="countdown-label">Dias</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-value" id="hours">00</div>
+                <div class="countdown-label">Horas</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-value" id="minutes">00</div>
+                <div class="countdown-label">Minutos</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-value" id="seconds">00</div>
+                <div class="countdown-label">Segundos</div>
+            </div>
+        </div>
+        <p id="hero-countdown-end-text" class="reveal" style="font-weight: 500; z-index: 1;">...até o começo de um novo capítulo.</p>
+    </div>
+</header>
+
+<main>
+    <section id="journey" class="section">
+        <div class="container">
+            <h2 class="reveal">Nossa Jornada</h2>
+            <div class="journey-grid">
+                <div class="journey-item card reveal">
+                    <span class="icon">✨</span>
+                    <h3>O Primeiro Olhar</h3>
+                    <p>O dia em que meu mundo ganhou uma nova cor. Mal sabia eu que tudo estava prestes a mudar para sempre.</p>
+                </div>
+                <div class="journey-item card reveal">
+                    <span class="icon">😂</span>
+                    <h3>Risadas Compartilhadas</h3>
+                    <p>Cada piada boba e cada gargalhada sincera se tornaram a trilha sonora da minha felicidade ao seu lado.</p>
+                </div>
+                <div class="journey-item card reveal">
+                    <span class="icon">❤️</span>
+                    <h3>Um Sentimento Único</h3>
+                    <p>Perceber que a sua presença se tornou meu porto seguro, e que em você encontrei mais do que eu sonhava.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="proposal" class="section">
+        <div class="container">
+            <div class="card reveal">
+                <h2>Um Pedido do Coração</h2>
+                <p id="proposal-text">
+                    Bea, desde que você chegou, cada nascer do sol parece mais brilhante. Você trouxe uma paz e uma alegria que eu não conhecia. 
+                    Cada momento ao seu lado é uma lembrança que guardo com um carinho imenso.
+                </p>
+                <p id="proposal-text">
+                    Por isso, no dia <strong>15 de Setembro de 2025, às 6h da manhã</strong>, 
+                    em um nascer do sol que eu espero que marque o início de algo lindo,
+                    eu quero oficializar o que meu coração já sente há muito tempo.
+                </p>
+                <p id="final-question">
+                    Você aceita namorar comigo?
+                </p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="container">
+        <p>Feito com cada batida do meu coração, só para você, Bea. ❤️</p>
+        <div class="theme-switcher" id="theme-switcher">
+            <span id="theme-icon">🌙</span>
+            <span id="theme-text">Mudar tema</span>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // --- DOM ELEMENTS ---
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => document.querySelectorAll(selector);
+    const daysEl = $('#days');
+    const hoursEl = $('#hours');
+    const minutesEl = $('#minutes');
+    const secondsEl = $('#seconds');
+    const heroSubtext = $('#hero-subtext');
+    const heroCountdownEndText = $('#hero-countdown-end-text');
+    const themeSwitcher = $('#theme-switcher');
+    const themeIcon = $('#theme-icon');
+    const themeText = $('#theme-text');
+    const heartsContainer = $('#hearts-container');
+
+    // --- STATE ---
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    // !!! TARGET DATE UPDATED AS REQUESTED !!!
+    const targetDate = new Date('2025-09-15T06:00:00');
+    let countdownInterval;
+
+    // --- FUNCTIONS ---
+
+    // Typing Effect
+    function typeWriter(element, textArray, period = 100) {
+        let textIndex = 0;
+        let charIndex = 0;
+        let currentText = '';
+        
+        function type() {
+            if (textIndex < textArray.length) {
+                if (charIndex < textArray[textIndex].length) {
+                    currentText += textArray[textIndex].charAt(charIndex);
+                    element.innerHTML = currentText;
+                    charIndex++;
+                    setTimeout(type, period);
+                } else {
+                    setTimeout(() => {
+                        textIndex++;
+                        charIndex = 0;
+                        currentText = '';
+                        if (textIndex < textArray.length) type();
+                    }, 1500); // Pause between sentences
+                }
+            }
+        }
+        type();
+    }
+    
+    // Create floating hearts
+    function createHearts() {
+        const hearts = ['💖', '💕', '💓', '💗', '💘', '💝'];
+        const containerWidth = window.innerWidth;
+        
+        for (let i = 0; i < 15; i++) {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+            heart.style.left = `${Math.random() * containerWidth}px`;
+            heart.style.top = `${Math.random() * window.innerHeight * 0.8}px`;
+            heart.style.animationDelay = `${Math.random() * 7}s`;
+            heartsContainer.appendChild(heart);
+        }
+    }
+
+    // Update countdown
+    function updateCountdown() {
+        const now = new Date();
+        const difference = targetDate - now;
+        
+        if (difference <= 0) {
+            clearInterval(countdownInterval);
+            daysEl.textContent = '00';
+            hoursEl.textContent = '00';
+            minutesEl.textContent = '00';
+            secondsEl.textContent = '00';
+            heroSubtext.innerHTML = 'O momento chegou!';
+            heroSubtext.style.animation = 'none';
+            heroSubtext.style.borderRight = 'none';
+            heroCountdownEndText.textContent = 'Beatriz, você aceita namorar comigo?';
+            triggerConfetti();
+            return;
+        }
+        
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+        
+        daysEl.textContent = days.toString().padStart(2, '0');
+        hoursEl.textContent = hours.toString().padStart(2, '0');
+        minutesEl.textContent = minutes.toString().padStart(2, '0');
+        secondsEl.textContent = seconds.toString().padStart(2, '0');
+    }
+
+    // Theme switcher
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        if (theme === 'dark') {
+            themeIcon.textContent = '☀️';
+            themeText.textContent = 'Mudar tema';
+        } else {
+            themeIcon.textContent = '🌙';
+            themeText.textContent = 'Mudar tema';
+        }
+        localStorage.setItem('theme', theme);
+        currentTheme = theme;
+    }
+
+    // Reveal on Scroll
+    function setupIntersectionObserver() {
+        const revealElements = $$('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        revealElements.forEach(el => observer.observe(el));
+    }
+    
+    // Confetti effect
+    function triggerConfetti() {
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let confetti = [];
+        const confettiCount = 200;
+        const colors = ['#F9DDE7', '#E6E1FF', '#E3F7EF', '#fff'];
+
+        for (let i = 0; i < confettiCount; i++) {
+            confetti.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                r: Math.random() * 5 + 2,
+                d: Math.random() * confettiCount,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                tilt: Math.floor(Math.random() * 10) - 10
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            confetti.forEach((c, index) => {
+                ctx.beginPath();
+                ctx.lineWidth = c.r / 2;
+                ctx.strokeStyle = c.color;
+                ctx.moveTo(c.x + c.tilt, c.y);
+                ctx.lineTo(c.x, c.y + c.tilt + c.r / 2);
+                ctx.stroke();
+                
+                c.y += Math.cos(c.d + index) + 3 + c.r / 2;
+                c.x += Math.sin(c.d) * 2;
+                c.tilt = Math.sin(c.d) * 15;
+                
+                if (c.y > canvas.height) {
+                    confetti[index] = { ...c, x: Math.random() * canvas.width, y: -20 };
+                }
+            });
+            requestAnimationFrame(draw);
+        }
+        draw();
+    }
+
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+        applyTheme(currentTheme);
+        updateCountdown();
+        countdownInterval = setInterval(updateCountdown, 1000);
+        createHearts();
+        setupIntersectionObserver();
+        
+        const romanticPhrases = [
+            "Desde que te conheci, os dias são mais coloridos...",
+            "E agora, estou contando cada segundo..."
+        ];
+        typeWriter(heroSubtext, romanticPhrases, 80);
+    });
+
+    // Theme switcher event
+    themeSwitcher.addEventListener('click', () => {
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        applyTheme(newTheme);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Um Cantinho para a Bea</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&family=Quicksand:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+
+    <style>
+        /* CSS Reset and Base Styles */
+        :root {
+            --color-primary: #F9DDE7; /* Rosa */
+            --color-secondary: #E6E1FF; /* Lilás */
+            --color-background: #FFF6E5; /* Creme */
+            --color-accent: #E3F7EF; /* Menta */
+            --color-text: #333;
+            --color-text-soft: #555;
+            --color-shadow: rgba(0, 0, 0, 0.08);
+            --font-heading: 'Nunito', sans-serif;
+            --font-body: 'Quicksand', sans-serif;
+            --border-radius: 16px;
+            --transition-speed: 250ms;
+        }
+
+        html[data-theme="dark"] {
+            --color-primary: #5e3d4a;
+            --color-secondary: #4a446b;
+            --color-background: #1a1815;
+            --color-accent: #3c6358;
+            --color-text: #f0f0f0;
+            --color-text-soft: #ccc;
+            --color-shadow: rgba(255, 255, 255, 0.08);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.6;
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+        
+        :focus-visible {
+            outline: 3px solid var(--color-secondary);
+            outline-offset: 3px;
+            border-radius: 4px;
+        }
+
+        /* Layout and General Styles */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        h1, h2, h3 {
+            font-family: var(--font-heading);
+            font-weight: 900;
+            color: var(--color-text);
+            margin-bottom: 1rem;
+        }
+        
+        h2 { text-align: center; }
+
+        .section {
+            padding: 3rem 0;
+            position: relative;
+        }
+        
+        .card {
+            background-color: rgba(255, 255, 255, 0.5);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px var(--color-shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+        }
+
+        html[data-theme="dark"] .card {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn {
+            display: inline-block;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            background-color: var(--color-primary);
+            color: var(--color-text);
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 99px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform var(--transition-speed) ease, background-color var(--transition-speed) ease;
+            box-shadow: 0 2px 8px var(--color-shadow);
+        }
+
+        .btn:hover, .btn:focus-visible {
+            transform: translateY(-3px);
+            background-color: var(--color-secondary);
+        }
+        
+        /* Hero Section */
+        #hero {
+            text-align: center;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #hero-greeting {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900;
+        }
+        
+        #hero-subtext {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            color: var(--color-text-soft);
+            min-height: 2em; /* Prevents layout shift */
+            margin-bottom: 2rem;
+        }
+
+        /* Messages Section */
+        #messages-carousel {
+            position: relative;
+            overflow: hidden;
+            height: 250px;
+            cursor: grab;
+        }
+        #messages-carousel:active { cursor: grabbing; }
+
+        .message-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 1.5rem;
+            padding: 1rem;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease;
+        }
+        .message-card.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .messages-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .nav-btn, .fav-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color var(--transition-speed) ease;
+        }
+        .nav-btn:hover, .fav-btn:hover { background-color: var(--color-accent); }
+        .nav-btn svg, .fav-btn svg { width: 24px; height: 24px; stroke: var(--color-text); }
+        .fav-btn.favorited svg { fill: var(--color-primary); stroke: var(--color-primary); }
+
+        /* Comfort Kit Section */
+        .comfort-kit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            text-align: center;
+        }
+        
+        .comfort-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            cursor: pointer;
+        }
+        .comfort-item:hover { transform: scale(1.05); }
+        .comfort-item .icon { font-size: 3rem; margin-bottom: 1rem; }
+        
+        #tea-timer-display {
+            font-size: 2rem;
+            font-family: var(--font-heading);
+            margin: 1rem 0;
+        }
+
+        /* Carinho Button Section */
+        #carinho-container {
+            position: relative;
+            text-align: center;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Mimos List */
+        #mimos-list {
+            list-style: none;
+            padding: 0;
+        }
+        #mimos-list li {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--color-shadow);
+        }
+        #mimos-list li:last-child { border-bottom: none; }
+        #mimos-list input[type="checkbox"] {
+            margin-right: 1rem;
+            width: 20px;
+            height: 20px;
+            accent-color: var(--color-primary);
+        }
+        #mimos-list label.done {
+            text-decoration: line-through;
+            color: var(--color-text-soft);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            color: var(--color-text-soft);
+            font-size: 0.9rem;
+            position: relative; /* Adicionado para posicionar o botão secreto */
+        }
+        footer a { color: var(--color-text); text-decoration: none; font-weight: bold; }
+        footer a:hover { text-decoration: underline; }
+        
+        .theme-switcher {
+            margin-top: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+        .theme-switcher:hover { background-color: var(--color-shadow); }
+        
+        /* Estilo para o botão secreto */
+        #secret-trigger {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            width: 15px;
+            height: 15px;
+            font-size: 15px;
+            line-height: 15px;
+            color: var(--color-text-soft);
+            opacity: 0.5;
+            cursor: pointer;
+            transition: transform 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+            -webkit-user-select: none; /* Impede a seleção de texto */
+            -ms-user-select: none;
+            user-select: none;
+        }
+        #secret-trigger:hover {
+            transform: scale(1.5);
+            color: var(--color-primary);
+            opacity: 1;
+        }
+
+        /* Modal for Easter Eggs & Timer */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity var(--transition-speed) ease, visibility 0s var(--transition-speed) ease;
+            z-index: 1000;
+        }
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+            transition-delay: 0s;
+        }
+        .modal-content {
+            background-color: var(--color-background);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            max-width: 90%;
+            transform: scale(0.9);
+            transition: transform var(--transition-speed) ease;
+        }
+        .modal-overlay.visible .modal-content {
+            transform: scale(1);
+        }
+        
+        #password-input {
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid var(--color-text-soft);
+            margin: 1rem 0;
+            width: 80%;
+            text-align: center;
+        }
+        .shake {
+            animation: shake 0.5s ease;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+        #error-message {
+            color: #e74c3c;
+            min-height: 1.2em;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header id="hero" class="section">
+        <div class="container">
+            <h1 id="hero-greeting">Olá, minha princesa 💖</h1>
+            <p id="hero-subtext">Vim te lembrar que você é incrível.</p>
+            <a href="#messages" class="btn">Receber um carinho</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="messages" class="section">
+            <div class="container">
+                <h2>Mensagens fofinhas pra você</h2>
+                <div id="messages-carousel" class="card">
+                    </div>
+                <div class="messages-controls">
+                    <button class="nav-btn" id="prev-message" aria-label="Mensagem anterior">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </button>
+                    <button class="fav-btn" id="fav-message" aria-label="Favoritar mensagem">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    </button>
+                    <button class="nav-btn" id="next-message" aria-label="Próxima mensagem">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+                 <div class="messages-controls">
+                    <button id="shuffle-messages" class="btn">Embaralhar</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="comfort-kit" class="section">
+            <div class="container">
+                <h2>Kit de Conforto da Cólica</h2>
+                <div class="comfort-kit-grid">
+                    <div class="card comfort-item" id="comfort-heat">
+                        <span class="icon">🔥</span>
+                        <h3>Bolsa de água quente</h3>
+                    </div>
+                    <div class="card comfort-item" id="comfort-tea">
+                        <span class="icon">☕</span>
+                        <h3>Chazinho pra você</h3>
+                    </div>
+                    <div class="card comfort-item" id="comfort-breathe">
+                        <span class="icon">💞</span>
+                        <h3>Respira comigo</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="carinho" class="section">
+            <div class="container">
+                <div id="carinho-container">
+                    <h2>Um botão de carinho instantâneo</h2>
+                    <button id="carinho-btn" class="btn">Clique aqui pra um afago</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="mimos" class="section">
+            <div class="container">
+                <h2>Nossa listinha de mimos</h2>
+                <div class="card">
+                    <ul id="mimos-list">
+                        </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Feito com todo o amor do mundo, só pra você, Bea. ❤️</p>
+            <p><a href="https://wa.me/5512996716119?text=Oi%2C%20amor!%20Vim%20do%20seu%20site%20fofo%20pra%20te%20dar%20um%20oi." target="_blank">Falar com você</a></p>
+            <div class="theme-switcher" id="theme-switcher">
+                <span id="theme-icon">🌙</span>
+                <span id="theme-text">Mudar para tema escuro</span>
+            </div>
+            <div id="secret-trigger" title="Um segredo...">•</div>
+        </div>
+    </footer>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content" id="modal-content">
+            </div>
+    </div>
+
+    <script>
+    // --- DATA ---
+    const messagesData = [
+        "minha princesa, meu caos favorito 💖",
+        "seu sorriso cura até cólica (cientificamente comprovado por mim)",
+        "surtadinha? só a dose certa pra eu viciar",
+        "você = meu lugar seguro",
+        "hoje o mundo é delicado com você, prometo",
+        "Oi, Bea. Vim te lembrar que você é minha pessoa preferida.",
+        "Saudade tem seu nome e um cheiro de chá.",
+        "Você é mais corajosa do que pensa e mais amada do que imagina.",
+        "Orgulho de você, minha surtadinha 💗",
+        "Pra cada surto, um milhão de beijos.",
+        "Você não precisa dar conta de tudo. Só precisa ser você.",
+        "Seu jeitinho me desmonta me monta de novo, só que melhor."
+    ];
+
+    const mimosData = [
+        { id: 1, text: "Passeio de moto pra vc fazer carinho no meu pescoço e nas minhas costas" },
+        { id: 2, text: "Ir ver o sol nascer juntinhos" },
+        { id: 3, text: "Rolezinhos de madrugada aleatórios" },
+        { id: 4, text: "Tirar fotinhas polaroid pra nossas capinhas de celular" },
+        { id: 5, text: "Andar à toa de mãos dadas falando nada com nada" },
+        { id: 6, text: "Fazer carinho no meu cabelo enquanto apaga e bloqueia as meninas do meu insta" }
+    ];
+
+    const carinhoMessages = [
+        "Orgulho de você, minha surtadinha 💗",
+        "Você é luz, sabia?",
+        "Um beijo na sua testa.",
+        "Tô pensando em você agora.",
+        "Você é mais forte do que imagina.",
+        "Seu coração é lindo.",
+        "Minha princesa surtadinha, você é meu caos preferido 💞",
+        "Você merece um abraço apertado agora 🤗",
+        "Cólica nenhuma é páreo pra você, guerreira 💖",
+        "Seu sorriso é meu lugar seguro ✨",
+        "Só de lembrar de você, já fico mais leve 🌸",
+        "Se cuida, meu amorzinho, eu tô contigo sempre 💕",
+        "Você é linda até resmungando 😍",
+        "Queria estar aí pra cuidar de você agora 🫂",
+        "Surtadinha do bem, meu vício mais doce 💗",
+        "Nada no mundo me faz mais feliz do que você 🌍💝"
+    ];
+
+    // --- DOM ELEMENTS ---
+    const $ = (selector) => document.querySelector(selector);
+    const heroGreeting = $('#hero-greeting');
+    const heroSubtext = $('#hero-subtext');
+    const messagesCarousel = $('#messages-carousel');
+    const prevMessageBtn = $('#prev-message');
+    const nextMessageBtn = $('#next-message');
+    const favMessageBtn = $('#fav-message');
+    const shuffleBtn = $('#shuffle-messages');
+    const mimosList = $('#mimos-list');
+    const themeSwitcher = $('#theme-switcher');
+    const themeIcon = $('#theme-icon');
+    const themeText = $('#theme-text');
+    const carinhoBtn = $('#carinho-btn');
+    const carinhoContainer = $('#carinho-container');
+    const modal = $('#modal');
+    const modalContent = $('#modal-content');
+    const secretTrigger = $('#secret-trigger');
+
+    // --- STATE ---
+    let currentMessageIndex = 0;
+    let favoriteMessages = JSON.parse(localStorage.getItem('favoriteMessages')) || [];
+    let mimosDone = JSON.parse(localStorage.getItem('mimosDone')) || [];
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    let teaTimerInterval;
+    let clickCount = 0; // Contador de cliques
+    let clickTimeout; // Timeout para resetar o contador
+
+    // --- FUNCTIONS ---
+
+    // HERO SECTION
+    function setGreeting() {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 12) {
+            heroGreeting.innerHTML = "Bom dia, minha princesa ☀️";
+        } else if (hour >= 12 && hour < 18) {
+            heroGreeting.innerHTML = "Boa tarde, meu amorzinho ✨";
+        } else {
+            heroGreeting.innerHTML = "Boa noite, minha maluquinha 🌙";
+        }
+    }
+    
+    function setRotatingSubtext() {
+        const subtexts = [
+            "Vim te lembrar que você é incrível.",
+            "Você é minha pessoa preferida no mundo.",
+            "Seu abraço é meu lugar seguro.",
+            "Pensando no seu sorriso.",
+            "Minha surtadinha favorita."
+        ];
+        let index = 0;
+        setInterval(() => {
+            index = (index + 1) % subtexts.length;
+            heroSubtext.style.opacity = 0;
+            setTimeout(() => {
+                heroSubtext.textContent = subtexts[index];
+                heroSubtext.style.opacity = 1;
+            }, 500);
+        }, 5000);
+    }
+
+    // MESSAGES SECTION
+    function renderMessages() {
+        messagesCarousel.innerHTML = '';
+        messagesData.forEach((msg, index) => {
+            const card = document.createElement('div');
+            card.className = 'card message-card';
+            card.textContent = msg;
+            card.dataset.index = index;
+            if (index === currentMessageIndex) card.classList.add('active');
+            messagesCarousel.appendChild(card);
+        });
+        updateFavButton();
+    }
+    function showMessage(index) {
+        document.querySelectorAll('.message-card').forEach(card => card.classList.remove('active'));
+        const newCard = document.querySelector(`.message-card[data-index='${index}']`);
+        if (newCard) {
+            newCard.classList.add('active');
+            currentMessageIndex = index;
+            updateFavButton();
+        }
+    }
+    function updateFavButton() {
+        if (favoriteMessages.includes(messagesData[currentMessageIndex])) {
+            favMessageBtn.classList.add('favorited');
+        } else {
+            favMessageBtn.classList.remove('favorited');
+        }
+    }
+    function toggleFavorite() {
+        const currentMessage = messagesData[currentMessageIndex];
+        const favIndex = favoriteMessages.indexOf(currentMessage);
+        if (favIndex > -1) {
+            favoriteMessages.splice(favIndex, 1);
+        } else {
+            favoriteMessages.push(currentMessage);
+        }
+        localStorage.setItem('favoriteMessages', JSON.stringify(favoriteMessages));
+        updateFavButton();
+    }
+
+    // MIMOS SECTION
+    function renderMimos() {
+        mimosList.innerHTML = '';
+        mimosData.forEach(mimo => {
+            const li = document.createElement('li');
+            const isDone = mimosDone.includes(mimo.id);
+            li.innerHTML = `<input type="checkbox" id="mimo-${mimo.id}" data-id="${mimo.id}" ${isDone ? 'checked' : ''}><label for="mimo-${mimo.id}" class="${isDone ? 'done' : ''}">${mimo.text}</label>`;
+            mimosList.appendChild(li);
+        });
+    }
+    function handleMimoToggle(e) {
+        if (e.target.type === 'checkbox') {
+            const mimoId = parseInt(e.target.dataset.id);
+            const label = e.target.nextElementSibling;
+            if (e.target.checked) {
+                if (!mimosDone.includes(mimoId)) mimosDone.push(mimoId);
+                label.classList.add('done');
+            } else {
+                mimosDone = mimosDone.filter(id => id !== mimoId);
+                label.classList.remove('done');
+            }
+            localStorage.setItem('mimosDone', JSON.stringify(mimosDone));
+        }
+    }
+
+    // THEME SWITCHER
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        if (theme === 'dark') {
+            themeIcon.textContent = '☀️';
+            themeText.textContent = 'Mudar para tema claro';
+        } else {
+            themeIcon.textContent = '🌙';
+            themeText.textContent = 'Mudar para tema escuro';
+        }
+        localStorage.setItem('theme', theme);
+        currentTheme = theme;
+    }
+
+    // CARINHO BUTTON
+    function createParticles(e) {
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            carinhoContainer.appendChild(particle);
+            const size = Math.random() * 10 + 5;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.background = `hsl(${Math.random() * 360}, 100%, 80%)`;
+            const destinationX = (Math.random() - 0.5) * 300;
+            const destinationY = (Math.random() - 0.5) * 300;
+            const animation = particle.animate([
+                { transform: 'translate(0, 0)', opacity: 1 },
+                { transform: `translate(${destinationX}px, ${destinationY}px)`, opacity: 0 }
+            ], {
+                duration: Math.random() * 1000 + 1000,
+                easing: 'cubic-bezier(0.17, .67, .83, .67)',
+                delay: Math.random() * 200
+            });
+            animation.onfinish = () => particle.remove();
+        }
+        const randomMessage = carinhoMessages[Math.floor(Math.random() * carinhoMessages.length)];
+        showModal(`<h3>${randomMessage}</h3>`);
+        setTimeout(hideModal, 2000);
+    }
+
+    // MODAL & PASSWORD LOGIC
+    function showModal(content) {
+        modalContent.innerHTML = content;
+        modal.classList.add('visible');
+    }
+    function hideModal() {
+        modal.classList.remove('visible');
+    }
+    function showPasswordPrompt() {
+        const content = `
+            <h3>Um segredo para nós...</h3>
+            <p>Digite a senha especial:</p>
+            <input type="password" id="password-input" placeholder="********">
+            <p id="error-message"></p>
+            <button id="password-submit-btn" class="btn">Confirmar</button>
+        `;
+        showModal(content);
+        $('#password-input').focus();
+    }
+    function checkPassword() {
+        const input = $('#password-input');
+        const errorMessage = $('#error-message');
+        const modalContent = $('#modal-content');
+        
+        // #######################################################
+        // ## ALTERE A SENHA E O NOME DO ARQUIVO AQUI           ##
+        // #######################################################
+        const correctPassword = "minhaprincesa"; 
+        const redirectPage = "pedido.html";
+        // #######################################################
+
+        if (input.value === correctPassword) {
+            window.location.href = redirectPage;
+        } else {
+            errorMessage.textContent = "Senha incorreta, tente de novo.";
+            modalContent.classList.add('shake');
+            setTimeout(() => {
+                modalContent.classList.remove('shake');
+            }, 500);
+        }
+    }
+
+    // COMFORT KIT
+    function handleComfortKit(id) {
+        switch (id) {
+            case 'comfort-heat': showModal(`<h3>Bolsinha quente a caminho! 🔥</h3><p>O calor ajuda a relaxar os músculos...</p>`); break;
+            case 'comfort-tea': showModal(`<h3>Um chazinho pra acalmar ☕</h3>...`); break;
+            case 'comfort-breathe': showModal(`<h3>Vamos respirar juntas... 💞</h3>...`); startBreathingExercise(); break;
+        }
+    }
+
+    // EASTER EGGS
+    let keySequence = [];
+    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    function handleKeyDown(e) {
+        keySequence.push(e.key);
+        keySequence = keySequence.slice(-konamiCode.length); 
+        if (keySequence.join('').toLowerCase().includes('bea')) {
+            showModal(`<h3>Segredinho...:</h3><p>Você é o motivo do meu sorriso mais bobo. Te amo!</p>`);
+            keySequence = [];
+        }
+        if (JSON.stringify(keySequence) === JSON.stringify(konamiCode)) {
+            showModal(`<h3>Parabéns! 🥳</h3><p>Princesa desbloqueou +1 beijo virtual 💋</p>`);
+            keySequence = [];
+        }
+    }
+
+    // NOVO: Função para lidar com cliques no botão secreto
+    function handleSecretClick() {
+        // Limpa o timeout anterior se existir
+        clearTimeout(clickTimeout);
+        
+        // Incrementa o contador de cliques
+        clickCount++;
+        
+        // Se chegou a 10 cliques, mostra o prompt de senha
+        if (clickCount >= 10) {
+            showPasswordPrompt();
+            clickCount = 0; // Reseta o contador
+        } else {
+            // Define um timeout para resetar o contador após 3 segundos
+            clickTimeout = setTimeout(() => {
+                clickCount = 0;
+            }, 3000);
+        }
+    }
+
+    // --- EVENT LISTENERS ---
+    document.addEventListener('DOMContentLoaded', () => {
+        setGreeting();
+        setRotatingSubtext();
+        renderMessages();
+        renderMimos();
+        applyTheme(currentTheme);
+    });
+    
+    // NOVO: Lógica de clique para o BOTÃO SECRETO (10 cliques)
+    secretTrigger.addEventListener('click', handleSecretClick);
+
+    // Event listeners antigos que não foram alterados
+    nextMessageBtn.addEventListener('click', () => {
+        const nextIndex = (currentMessageIndex + 1) % messagesData.length;
+        showMessage(nextIndex);
+    });
+    prevMessageBtn.addEventListener('click', () => {
+        const prevIndex = (currentMessageIndex - 1 + messagesData.length) % messagesData.length;
+        showMessage(prevIndex);
+    });
+    shuffleBtn.addEventListener('click', () => {
+        let randomIndex;
+        do {
+            randomIndex = Math.floor(Math.random() * messagesData.length);
+        } while (randomIndex === currentMessageIndex);
+        showMessage(randomIndex);
+    });
+    favMessageBtn.addEventListener('click', toggleFavorite);
+    mimosList.addEventListener('change', handleMimoToggle);
+    themeSwitcher.addEventListener('click', () => {
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        applyTheme(newTheme);
+    });
+    carinhoBtn.addEventListener('click', createParticles);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            hideModal();
+            clearInterval(teaTimerInterval);
+        }
+    });
+    document.querySelector('#comfort-kit').addEventListener('click', (e) => {
+        const target = e.target.closest('.comfort-item');
+        if (target) handleComfortKit(target.id);
+    });
+    document.body.addEventListener('click', (e) => {
+        if (e.target.classList.contains('tea-time-btn')) {
+            const time = parseInt(e.target.dataset.time);
+            startTeaTimer(time);
+        }
+        if (e.target.id === 'cancel-timer') {
+            clearInterval(teaTimerInterval);
+            hideModal();
+        }
+        if (e.target.id === 'password-submit-btn') {
+            checkPassword();
+        }
+    });
+    document.body.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && document.activeElement.id === 'password-input') {
+            checkPassword();
+        }
+    });
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Swipe functionality
+    let touchstartX = 0;
+    let touchendX = 0;
+    function checkDirection() {
+      if (touchendX < touchstartX) nextMessageBtn.click();
+      if (touchendX > touchstartX) prevMessageBtn.click();
+    }
+    messagesCarousel.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; });
+    messagesCarousel.addEventListener('touchend', e => { touchendX = e.changedTouches[0].screenX; checkDirection(); });
+
+    </script>
+</body>
+</html>
