@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendário do Nosso Amor</title>
+    <style>
+        :root {
+            --cor-primaria: #ff6b6b;
+            --cor-secundaria: #ff8e8e;
+            --cor-destaque: #ff4757;
+            --cor-texto: #2f3542;
+            --cor-fundo: #fff9f9;
+            --cor-borda: #ffe0e0;
+            --cor-destaque-texto: #a83a3a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-bottom: 2px solid var(--cor-borda);
+        }
+        
+        h1 {
+            color: var(--cor-primaria);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitulo {
+            color: var(--cor-secundaria);
+            font-style: italic;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .calendario {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .controles-calendario {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: var(--cor-borda);
+            border-radius: 10px;
+        }
+        
+        .mes-ano {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--cor-primaria);
+        }
+        
+        .botoes-navegacao button {
+            background: var(--cor-primaria);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .botoes-navegacao button:hover {
+            background: var(--cor-destaque);
+        }
+        
+        .dias-semana {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .dias-semana div {
+            padding: 10px;
+        }
+        
+        .dias-mes {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        
+        .dia {
+            text-align: center;
+            padding: 15px 5px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .dia:hover {
+            background-color: var(--cor-borda);
+        }
+        
+        .dia.com-carta::after {
+            content: "❤️";
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 0.7rem;
+        }
+        
+        .dia.selecionado {
+            background-color: var(--cor-primaria);
+            color: white;
+        }
+        
+        .dia.vazio {
+            cursor: default;
+        }
+        
+        .carta-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            display: none;
+        }
+        
+        .carta-container.visivel {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        .cabecalho-carta {
+            border-bottom: 2px solid var(--cor-borda);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .data-carta {
+            font-size: 1.2rem;
+            color: var(--cor-primaria);
+            font-weight: bold;
+        }
+        
+        .titulo-carta {
+            font-size: 1.8rem;
+            margin: 10px 0;
+            color: var(--cor-destaque);
+        }
+        
+        .corpo-carta {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        
+        .corpo-carta p {
+            margin-bottom: 15px;
+        }
+        
+        .poema {
+            font-style: italic;
+            padding: 15px;
+            border-left: 3px solid var(--cor-primaria);
+            margin: 20px 0;
+            background-color: rgba(255, 107, 107, 0.1);
+        }
+        
+        .citacao {
+            padding: 10px 15px;
+            margin: 15px 0;
+            background-color: rgba(255, 107, 107, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--cor-destaque-texto);
+        }
+        
+        .assinatura {
+            text-align: right;
+            font-weight: bold;
+            margin-top: 20px;
+            color: var(--cor-primaria);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .dia {
+                padding: 10px 2px;
+                height: 40px;
+            }
+            
+            .carta-container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Calendário do Nosso Amor</h1>
+        <p class="subtitulo">Cada dia é uma nova página da nossa história</p>
+    </header>
+    
+    <div class="container">
+        <div class="calendario">
+            <div class="controles-calendario">
+                <div class="mes-ano">Agosto 2025</div>
+                <div class="botoes-navegacao">
+                    <button id="btn-mes-anterior">←</button>
+                    <button id="btn-mes-seguinte">→</button>
+                </div>
+            </div>
+            
+            <div class="dias-semana">
+                <div>Dom</div>
+                <div>Seg</div>
+                <div>Ter</div>
+                <div>Qua</div>
+                <div>Qui</div>
+                <div>Sex</div>
+                <div>Sáb</div>
+            </div>
+            
+            <div class="dias-mes" id="dias-mes">
+                <!-- Os dias serão gerados via JavaScript -->
+            </div>
+        </div>
+        
+        <div class="carta-container" id="carta-container">
+            <div class="cabecalho-carta">
+                <div class="data-carta" id="data-carta">24 de Agosto de 2025</div>
+                <h2 class="titulo-carta" id="titulo-carta">O Código-Fonte da Nossa Loucura</h2>
+            </div>
+            
+            <div class="corpo-carta" id="corpo-carta">
+                <!-- O conteúdo da carta será preenchido via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados das cartas (seriam preenchidas com todas as suas cartas)
+        const cartas = {
+            '2025-08-24': {
+                titulo: "O Código-Fonte da Nossa Loucura",
+                conteudo: `
+                    <p>Meu amor, minha surtadinha preferida,</p>
+                    
+                    <p>Se o nosso amor fosse um programa de computador, hoje seria o dia em que descobri o bug mais perfeito do sistema: você. E quer saber? É um bug que eu nunca, jamais, quero consertar. O dia começou com você me decifrando, investigando meus "apps abertos" com a precisão de uma hacker de corações, e eu, do outro lado, apenas um homem sonolento tentando explicar a bagunça do meu notebook.</p>
+                    
+                    <p>Sabe, gata, se eu fosse o navegador, você seria a única aba que eu deixaria aberta, mesmo que travasse todo o meu sistema.</p>
+                    
+                    <div class="citacao">"Essa maluca vai ser minha não importa como vou construir algo com ela só se vive uma vez"</div>
+                    
+                    <div class="poema">
+                        No caos do teu ciúme, eu vi um lar,<br>
+                        Na tua pergunta, um mar pra navegar.<br>
+                        Eras o código que eu não entendia,<br>
+                        A mais complexa e bela anomalia.<br>
+                        E foi na tua fúria, doce e possessiva,<br>
+                        Que a minha alma se sentiu, enfim, cativa.
+                    </div>
+                    
+                    <p>Ver você mal e não poder estar aí para te afogar em cuidados é a pior das torturas. Sinto-me um inútil, querendo atravessar a distância só para te fazer um carinho e garantir que você comeu. Mas saiba, minha princesa, que meu amor te alcança, te abraça e te cuida, mesmo quando minhas mãos não podem.</p>
+                    
+                    <p class="assinatura">Com todo o meu amor,<br>Ro</p>
+                `
+            },
+            '2025-08-25': {
+                titulo: "A Arquitetura da Eternidade",
+                conteudo: `
+                    <p>Minha princesa, meu futuro inteiro,</p>
+                    
+                  Ainda sinto o gosto da nossa conversa de ontem à noite na boca da alma. Passamos a madrugada desenhando o mapa do nosso para sempre, e cada detalhe que você descreveu pintou um quadro tão vívido na minha mente que quase pude sentir o calor da lareira. Nossa casa na montanha , o cheiro de café se misturando com o ar frio da manhã, o som das risadas dos nossos filhos correndo no quintal. Gata, se a gente já construiu um paraíso desses só com palavras, imagina quando começarmos a colocar os tijolos.
+
+
+E por falar em construir, hoje enfrentamos nossa primeira prova de fogo: os fantasmas do passado. Quando o nome "Arthur" surgiu, senti uma pontada, um ciúme primitivo que ferveu meu sangue. Despejei em você uma "bíblia" de frustração, não por duvidar de você, mas pelo ódio de imaginar alguém se vangloriando de ter tido o que hoje é meu tesouro mais precioso. É o leão que vive em mim, querendo rugir para proteger sua rainha.
+
+E você, minha mulher incrível, com uma única frase, construiu um muro ao nosso redor e expulsou todos os demônios. "Como se vc já n fosse meu homem e eu sua mulher e cabo, ngm vai fazer nada p dividir isso pq é eu e vc". Naquele instante, você não apenas me acalmou; você me fortaleceu. Você me lembrou que o nosso "nós" é uma fortaleza.
+
+
+                    
+                    <div class="poema">
+                        Erguemos sonhos numa noite fria,<br>
+                        Paredes de amor, teto de fantasia.<br>
+                        Mas sombras velhas tentaram invadir,<br>
+                        Trazendo a dor que eu jurei banir.<br>
+                        E com a voz firme, escudo e espada,<br>
+                        Tornaste a nossa união blindada.
+                    </div>
+                    
+                    <p>Seu amor é meu alicerce. Cada vez que você diz "meu homem", você reforça minhas estruturas. Cada vez que me defende, você decora nossos salões com bandeiras de vitória.</p>
+                    
+                    <p class="assinatura">Te amo,<br>Ronaldo</p>
+                `
+            },
+            '2025-08-26': {
+                titulo: "O Jogo Ardente da Nossa Sintonia",
+                conteudo: `
+                    <p>Meu bem, minha perdição, minha doce chama,</p>
+                    
+                    <p>Meu bem, minha perdição, minha doce chama,
+
+Se ontem foi sobre a solidez do futuro, hoje foi sobre a eletricidade do agora. O dia inteiro foi uma dança, um tango perigoso e excitante entre provocação e rendição. Ainda sinto a textura da "coleirinha" em meus dedos e o poder contido na simples ideia de te guiar com ela. É o nosso jogo, e eu sou viciado em cada rodada.
+
+Meu amor, você é como um livro de feitiços: cada página que eu viro revela um novo encantamento que me deixa mais e mais enfeitiçado. E hoje, você me deu de presente o mapa dos seus segredos mais ardentes. A nuca que se arrepia, a cintura que estremece com um toque, a pele que anseia por uma mordida. Gata, você não está me dando a chave de um tesouro, está me entregando o fósforo e o galão de gasolina, e eu mal posso esperar para incendiar tudo.
+
+Adoro quando você tenta ser forte, me empurrar, mostrar quem manda. É a preliminar mais deliciosa, porque ambos sabemos como termina: com você se desfazendo nos meus braços, perdendo a postura e se entregando ao desejo que nos consome. Essa nossa dinâmica, essa sua delicadeza arisca contra a minha força protetora, é a poesia mais erótica que já vivi.
+
+
+                
+                    
+                    <div class="poema">
+                        Teu corpo é mapa, segredo e convite,<br>
+                        E em cada ponto fraco, um novo limite.<br>
+                        Um toque na nuca, um beijo roubado,<br>
+                        Deixo teu mundo desgovernado.<br>
+                        Tu tentas lutar, com fúria e com garra,<br>
+                        Mas meu desejo te prende e te abraça.
+                    </div>
+                    
+                    <p>A noite caiu e com ela a promessa de um reencontro, deixando um rastro de tensão e expectativa no ar. Estou contando as horas, os minutos, os segundos.</p>
+                    
+                    <p class="assinatura">Seu para sempre,<br>Ro</p>
+                `
+            },
+            '2025-08-27': {
+                titulo: "A Montanha-Russa da Alma",
+                conteudo: `
+                    <p>Minha princesa, minha âncora,</p>
+                    
+                    <p>Minha princesa, minha âncora,
+
+Que dia foi este. Começamos no topo da montanha-russa, com a adrenalina da nossa paquera, e despencamos juntos para o vale mais escuro, mas o mais importante é que terminamos a viagem de mãos dadas, mais fortes do que nunca. A manhã foi nossa: sua caça ao tesouro no meu pequeno site, sua ansiedade fofa me fazendo rir, e a troca de provocações que nos deixou sem fôlego, com a promessa de um incêndio futuro.
+
+Meu amor, você é mais viciante que encontrar um easter egg em jogo raro. A diferença é que a recompensa de te decifrar é infinitamente melhor.
+
+E então, o clique da subida cessou, e o carrinho mergulhou. Uma palavra, "BGS", foi o suficiente para te levar a um lugar sombrio. Vi suas mensagens e senti seu mundo desmoronar. O medo te consumiu, a voz dos seus traumas gritou mais alto, e você quis fugir. Quis se afastar de mim, acreditando que estava me protegendo de uma futura dor. Meu amor, o único futuro doloroso que existe é um futuro sem você.
+
+Meu coração congelou. O pânico de te perder foi real. E naquele exato momento, não havia nada, absolutamente nada, mais importante do que te segurar. Foda-se o evento, foda-se o mundo. A minha prioridade era, é e sempre será você. Se algo te fere, eu arranco aquilo da nossa vida sem pensar duas vezes.
+
+Foi uma batalha te trazer de volta. Lutar contra os seus próprios demônios que te diziam que você é um fardo, que seus sentimentos são um problema. Deixe-me ser claro: sua alma, com todas as suas luzes e sombras, é o lugar mais lindo que já conheci. Sua vulnerabilidade não me afasta, ela me puxa para mais perto, desperta em mim um instinto de proteção que eu não sabia que tinha.</p>
+                    
+                    <p>Meu amor, você é mais viciante que encontrar um easter egg em jogo raro. A diferença é que a recompensa de te decifrar é infinitamente melhor.</p>
+                    
+                    <div class="citacao">"A minha prioridade era, é e sempre será você"</div>
+                    
+                    <div class="poema">
+                        No pico do riso, na troca de anseios,<br>
+                        Um gatilho, um medo, mil receios.<br>
+                        O chão se abriu, e a alma caiu,<br>
+                        E o nosso "sempre" por um fio se viu.<br>
+                        Gritei teu nome contra o vendaval,<br>
+                        "Tu és meu tudo, meu ponto final".
+                    </div>
+                    
+                    <p>Obrigado por ter me deixado lutar por você. Obrigado por, no fim, ter segurado a minha mão e confiado em mim para te puxar de volta para a luz. Dias como este são difíceis, mas eles nos mostram do que nosso amor é feito.</p>
+                    
+                    <p class="assinatura">Eternamente seu,<br>Ro</p>
+                `
+            },
+            '2025-08-28': {
+                titulo: "A Sinfonia da Nossa Certeza",
+                conteudo: `
+                    <p>Meu amor,</p>
+                    
+                    <p>Hoje, eu não acordei. Eu fui despertado. Fui arrancado do sono por uma sinfonia de palavras que você compôs na calada da noite. Sua declaração não foi uma mensagem de texto; foi uma obra de arte, uma confissão que redefiniu a palavra "amor" para mim. Cada frase era uma nota que vibrava diretamente no meu coração, falando de futuro, de filhos, de ser a última, de uma vida inteira . Eu li e reli, e com cada leitura, a certeza se tornava mais sólida, mais inabalável. O que nós temos é real.
+
+Eu tentei reger minha própria sinfonia em resposta, transformar o oceano de emoções que você despertou em mim em palavras que pudessem, ao menos, tocar a margem da sua beleza . Falei do nosso casalzinho de filhos, do nosso envelhecer juntos, de como você é meu tudo. Gata, se nosso amor fosse uma canção, já teríamos o álbum inteiro, e cada faixa seria um sucesso.
+
+Com essa trilha sonora no coração, o dia deveria ter sido perfeito. E foi, à nossa maneira. Compramos os ingressos para o nosso filme, o primeiro de incontáveis programas de casal. Mas toda boa sinfonia tem seus momentos de tensão. A dissonância veio na forma da minha mãe, uma consequência da minha teimosia.
+
+Eu sei que te coloquei no meio de um drama que não era seu, e peço desculpas por isso. Vê-la preocupada é a única coisa que me desestabiliza. Mas até mesmo nesse caos, encontramos uma harmonia. No meio da briga, seu nome foi dito. "Namorada". Pela primeira vez, sua existência foi oficializada na minha casa. Não foi um pedido de namoro sob as estrelas, mas foi um passo, um movimento importante na nossa partitura.
+
+</p>
+                    
+                    <div class="poema">
+                        Na tela fria, uma canção nasceu,<br>
+                        Era tua alma dizendo "sou teu".<br>
+                        E a melodia me fez flutuar,<br>
+                        Num novo jeito de te amar.<br>
+                        Mesmo com notas de fúria e tensão,<br>
+                        O nosso amor regeu a direção.
+                    </div>
+                    
+                    <p>Obrigado por ser a melodia que acalma minhas tempestades e a letra que dá sentido aos meus dias. Pode vir a orquestra inteira do caos, porque enquanto tivermos um ao outro como maestro, nossa música será sempre a mais linda.</p>
+                    
+                    <p class="assinatura">Te amo em cada nota,<br>Ro</p>
+                `
+            },
+            '2025-08-29': {
+                titulo: "Navegando as Águas Profundas de Nós",
+                conteudo: `
+                    <p>Minha vida, minha bússola,</p>
+                    
+                    <p>Hoje, eu não acordei. Eu fui despertado. Fui arrancado do sono por uma sinfonia de palavras que você compôs na calada da noite. Sua declaração não foi uma mensagem de texto; foi uma obra de arte, uma confissão que redefiniu a palavra "amor" para mim. Cada frase era uma nota que vibrava diretamente no meu coração, falando de futuro, de filhos, de ser a última, de uma vida inteira . Eu li e reli, e com cada leitura, a certeza se tornava mais sólida, mais inabalável. O que nós temos é real.
+
+Eu tentei reger minha própria sinfonia em resposta, transformar o oceano de emoções que você despertou em mim em palavras que pudessem, ao menos, tocar a margem da sua beleza . Falei do nosso casalzinho de filhos, do nosso envelhecer juntos, de como você é meu tudo. Gata, se nosso amor fosse uma canção, já teríamos o álbum inteiro, e cada faixa seria um sucesso.
+
+Com essa trilha sonora no coração, o dia deveria ter sido perfeito. E foi, à nossa maneira. Compramos os ingressos para o nosso filme, o primeiro de incontáveis programas de casal. Mas toda boa sinfonia tem seus momentos de tensão. A dissonância veio na forma da minha mãe, uma consequência da minha teimosia.
+
+Eu sei que te coloquei no meio de um drama que não era seu, e peço desculpas por isso. Vê-la preocupada é a única coisa que me desestabiliza. Mas até mesmo nesse caos, encontramos uma harmonia. No meio da briga, seu nome foi dito. "Namorada". Pela primeira vez, sua existência foi oficializada na minha casa. Não foi um pedido de namoro sob as estrelas, mas foi um passo, um movimento importante na nossa partitura.</p>
+                    
+                    <div class="citacao">"Gata, se eu soubesse que você era o tesouro, teria comprado o mapa e afundado todos os outros navios piratas antes mesmo que eles chegassem perto da sua ilha"</div>
+                    
+                    <div class="poema">
+                        No mar da vida, com seu vendaval,<br>
+                        Família, passado, um temporal.<br>
+                        Mas teu olhar, um farol a guiar,<br>
+                        Me fez em paz, enfim, navegar.<br>
+                        Ciúme é a onda que quebra com força,<br>
+                        Mas teu amor é a minha única rota.
+                    </div>
+                    
+                    <p>Obrigado por navegar comigo, por não ter medo das tempestades e por me mostrar que, juntos, podemos chegar a qualquer destino. Estou pronto para o que vier, desde que seja ao seu lado.</p>
+                    
+                    <p class="assinatura">Seu, em todas as marés,<br>Ro</p>
+                `
+            },
+            '2025-08-30': {
+                titulo: "A Beleza Encontrada nos Escombros",
+                conteudo: `
+                    <p>Meu amor,</p>
+                    
+                    <p>Se nosso amor fosse uma cidade, hoje ela teria sido atingida por um terremoto. Prédios de paciência desabaram, ruas de comunicação ficaram bloqueadas, e por um momento, ficamos perdidos nos escombros um do outro. Foi o dia mais difícil, o mais doloroso. E, ainda assim, foi o dia que me provou que o que temos é indestrutível.
+
+Tudo começou com a poeira da desconfiança, e minha tentativa de limpar o ar, enquanto a sua própria casa era tomada por um furacão familiar. E eu, na minha ânsia cega de ser seu abrigo, me tornei parte da tempestade. Ignorei seus pedidos, não te escutei, e forcei minha presença num momento em que você precisava de espaço. Fui egoísta, movido pela minha própria necessidade de te ver, e acabei te causando mais dor. Me perdoe.
+
+As palavras que você usou para me mandar embora doeram como vidro quebrado. "Vai embora". Cada letra foi uma facada. Senti-me rejeitado, incompreendido, e a mágoa me cegou por um instante, tudo isso nao por sua culpa mas pelo meu medo de te perder pois a tempos nao sentia uma crise de ansiedade tao forte quanto a do momento na noite anterior quando eu quase te perdi.
+
+E então, o golpe final do destino: a gasolina acabou. Fiquei ali, parado na serra, no escuro, sentindo-me o homem mais solitário do mundo. Mas foi naquela escuridão que a nossa luz mais forte brilhou. Sua preocupação rompeu a barreira da sua própria dor. E você desabou. Você me mostrou a culpa que te consumia, o peso que carregava, a guerra dentro da sua cabeça entre a vontade de me ver e a necessidade de se proteger .
+
+Naquele momento, Bia, enquanto eu empurrava aquela moto, eu não sentia o peso dela. Eu sentia o peso do seu sofrimento, e toda a minha dor se transformou em um amor protetor avassalador. Ali, eu entendi. Entendi sua pane, seu curto-circuito. E percebi novamente o principal, eu te amava e faria tudo por voce</p>
+                    
+                    <div class="citacao">"Gata, você não precisa ser forte o tempo todo. Você não precisa lidar com tudo sozinha. Eu não quero alguém 'melhor', eu quero você"</div>
+                    
+                    <div class="poema">
+                        O chão tremeu, o dia se partiu,<br>
+                        E o meu "amor" você não ouviu.<br>
+                        No caos, te vi de mim se afastar,<br>
+                        E em mil pedaços vi nosso lar.<br>
+                        Sozinho na estrada, na noite sem fim,<br>
+                        Foi quando a tua dor cuidou de mim.
+                    </div>
+                    
+                    <p>Gata, você não precisa ser forte o tempo todo. Você não precisa lidar com tudo sozinha. Eu não quero alguém "melhor", eu quero você. Quero suas crises, suas culpas, suas dores, porque elas também fazem parte da mulher por quem eu sou completamente apaixonado.</p>
+                    
+                    <p class="assinatura">Seu, reconstruído e mais seu do que nunca,<br>Ro</p>
+                `
+            }
+        };
+
+        // Referências aos elementos do DOM
+        const elementoDiasMes = document.getElementById('dias-mes');
+        const elementoMesAno = document.querySelector('.mes-ano');
+        const btnMesAnterior = document.getElementById('btn-mes-anterior');
+        const btnMesSeguinte = document.getElementById('btn-mes-seguinte');
+        const cartaContainer = document.getElementById('carta-container');
+        const dataCarta = document.getElementById('data-carta');
+        const tituloCarta = document.getElementById('titulo-carta');
+        const corpoCarta = document.getElementById('corpo-carta');
+
+        // Data atual (focada em agosto de 2025)
+        let dataAtual = new Date(2025, 7, 1); // Agosto é o mês 7 (0-indexado)
+
+        // Função para gerar o calendário
+        function gerarCalendario() {
+            // Limpar o calendário atual
+            elementoDiasMes.innerHTML = '';
+            
+            // Obter informações do mês e ano
+            const mes = dataAtual.getMonth();
+            const ano = dataAtual.getFullYear();
+            
+            // Atualizar o cabeçalho com o mês e ano
+            const opcoesMes = { month: 'long', year: 'numeric' };
+            elementoMesAno.textContent = dataAtual.toLocaleDateString('pt-BR', opcoesMes);
+            
+            // Obter o primeiro dia do mês
+            const primeiroDia = new Date(ano, mes, 1);
+            
+            // Obter o último dia do mês
+            const ultimoDia = new Date(ano, mes + 1, 0);
+            
+            // Obter o dia da semana do primeiro dia (0 = Domingo, 1 = Segunda, etc.)
+            const diaSemanaPrimeiro = primeiroDia.getDay();
+            
+            // Adicionar dias vazios para preencher a primeira semana
+            for (let i = 0; i < diaSemanaPrimeiro; i++) {
+                const diaVazio = document.createElement('div');
+                diaVazio.classList.add('dia', 'vazio');
+                elementoDiasMes.appendChild(diaVazio);
+            }
+            
+            // Adicionar os dias do mês
+            for (let dia = 1; dia <= ultimoDia.getDate(); dia++) {
+                const elementoDia = document.createElement('div');
+                elementoDia.classList.add('dia');
+                elementoDia.textContent = dia;
+                
+                // Formatar a data para verificar se há uma carta
+                const dataFormatada = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+                
+                // Verificar se há uma carta para este dia
+                if (cartas[dataFormatada]) {
+                    elementoDia.classList.add('com-carta');
+                    
+                    // Adicionar evento de clique para mostrar a carta
+                    elementoDia.addEventListener('click', () => {
+                        mostrarCarta(dataFormatada, dia, mes, ano);
+                        
+                        // Remover a seleção anterior
+                        document.querySelectorAll('.dia.selecionado').forEach(d => {
+                            d.classList.remove('selecionado');
+                        });
+                        
+                        // Adicionar seleção ao dia clicado
+                        elementoDia.classList.add('selecionado');
+                    });
+                }
+                
+                elementoDiasMes.appendChild(elementoDia);
+            }
+        }
+
+        // Função para mostrar a carta de um dia específico
+        function mostrarCarta(data, dia, mes, ano) {
+            // Formatar a data para exibição
+            const dataExibicao = new Date(ano, mes, dia);
+            const opcoesData = { day: 'numeric', month: 'long', year: 'numeric' };
+            dataCarta.textContent = dataExibicao.toLocaleDateString('pt-BR', opcoesData);
+            
+            // Atualizar o título e conteúdo da carta
+            tituloCarta.textContent = cartas[data].titulo;
+            corpoCarta.innerHTML = cartas[data].conteudo;
+            
+            // Mostrar o container da carta
+            cartaContainer.classList.add('visivel');
+            
+            // Rolar suavemente até a carta
+            cartaContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Event listeners para os botões de navegação
+        btnMesAnterior.addEventListener('click', () => {
+            dataAtual.setMonth(dataAtual.getMonth() - 1);
+            gerarCalendario();
+            cartaContainer.classList.remove('visivel');
+        });
+
+        btnMesSeguinte.addEventListener('click', () => {
+            dataAtual.setMonth(dataAtual.getMonth() + 1);
+            gerarCalendario();
+            cartaContainer.classList.remove('visivel');
+        });
+
+        // Inicializar o calendário
+        gerarCalendario();
+        
+        // Mostrar automaticamente a carta do dia 24 ao carregar a página
+        setTimeout(() => {
+            const dia24 = document.querySelectorAll('.dia.com-carta')[0];
+            if (dia24) {
+                dia24.click();
+            }
+        }, 500);
+    </script>
+</body>
+</html>
